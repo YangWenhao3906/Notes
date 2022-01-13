@@ -182,7 +182,7 @@ Collecting的guesslang的包有好几个, 包括2.2.1, 2.2.0, 2.0.3等, 依赖�
 
 ### 解决3(失败):在base内可以成功安装guesslang
 
- 
+
 
 举例: pip3安装guesslang
 
@@ -473,9 +473,9 @@ Requirement already satisfied: keras-preprocessing~=1.1.2 in /home/yang/anaconda
 
 
 
-# 运行代码
+# 运行代码-失败
 
-## 尝试运行代码
+## 尝试运行代码-失败
 
 ### 第一次运行, 报错Key Error
 
@@ -713,8 +713,6 @@ Arguments: (2022, 'CVE json file that was downloaded earlier...')
 
 不顶用, 报错信息相同
 
- 
-
 结论: 先老老实实把代码逻辑搞明白吧…
 
  
@@ -723,28 +721,71 @@ Arguments: (2022, 'CVE json file that was downloaded earlier...')
 
 2022.1.11
 
-## 远程连接的Ubuntu的屏幕抖动
+## 远程连接的Ubuntu的屏幕抖动-解决
 
 尝试: 更改Windows远程连接中的设置等, 未能解决
 
 经重启解决问题
 
+```shell
 Reboot
+```
 
-## Ubuntu与Windows共享文件夹
+## Ubuntu与Windows共享文件夹-未解决
 
-尚未解决
+**TODO 尚未解决**
 
 暂时安装了Samba, 并add user to Samba share
 
 不知为何, 在local network share时会出现error没有权限
 
-## 远程桌面经常断开
+## 远程桌面经常断开-未解决
 
 可能是校园网HIT-WLAN的问题
 
-下载team viewer 但是无法登录, 查找原因, 可能是无法在中国连接服务器, 作罢
+- 下载team viewer 但是无法登录, 查找原因, 可能是无法在中国连接服务器, 作罢
+
+- 想要用Kali-Linux破解学校用于开发测试的syndev的密码, 无奈暂时没有没有解决Kali虚拟机抓包的问题, 可能是需要无线网卡
 
 哎, 心累
 
-这种不是特别影响工作的事情就先罢了, 太影响心情了
+```
+这种不是特别影响工作的事情就先罢了, 太影响心情了!!
+```
+
+## GitHub同步笔记
+
+https://blog.csdn.net/oPengXiaoLiang/article/details/100678908相关教程
+
+
+
+# 阅读代码
+
+## 阅读方式
+
+### 使用 Shpinx 为 Python 项目自动生成文档
+
+https://juejin.cn/post/6882904677373968397相关教程
+
+### VSCode环境设置
+
+设置为当前conda虚拟环境的Python
+
+![image-20220113150413216](images/CVEfixes/image-20220113150413216.png)
+
+### 本地阅读并撰写注释
+
+远程桌面有延迟体验不佳, 暂时使用Windows VSCode进行阅读代码, 并撰写`注释`
+
+### 阅读代码策略
+
+- 每行: 每行撰写注释
+- 每段: 分析每段代码的input&output
+- 顺序: 从main运行顺序
+
+## cve_importer
+
+## collect_commits
+
+## collect_projects
+
