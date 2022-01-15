@@ -1,5 +1,9 @@
 CVEfixes报告
 
+[原论文地址](https://arxiv.org/abs/2107.08760)
+
+[原项目地址](https://github.com/secureIT-project/CVEfixes)
+
 # 环境配置
 
 2022.1.10
@@ -755,7 +759,7 @@ Reboot
 
 ## GitHub同步笔记
 
-https://blog.csdn.net/oPengXiaoLiang/article/details/100678908相关教程
+https://blog.csdn.net/oPengXiaoLiang/article/details/100678908  相关教程
 
 
 
@@ -765,7 +769,7 @@ https://blog.csdn.net/oPengXiaoLiang/article/details/100678908相关教程
 
 ### 使用 Shpinx 为 Python 项目自动生成文档
 
-https://juejin.cn/post/6882904677373968397相关教程
+[使用 Shpinx 为 Python 项目自动生成文档相关教程](https://juejin.cn/post/6882904677373968397) 
 
 ### VSCode环境设置
 
@@ -784,6 +788,94 @@ https://juejin.cn/post/6882904677373968397相关教程
 - 顺序: 从main运行顺序
 
 ## cve_importer
+
+### 问题: CWE中表项含义
+
+weaknesses,Categories,Views,External_References分别是什么
+
+- weaknesses: 记载每个漏洞
+- categories: 总结漏洞类型
+- views: 
+
+### 将CWE和CVE关联
+
+#### 完成关联
+
+![image-20220115104834392](images/CVEfixes/image-20220115104834392.png)
+
+![image-20220115105010551](images/CVEfixes/image-20220115105010551.png)
+
+#### 存在一对多: 一个CVE对应多个CWE
+
+![image-20220115111705867](images/CVEfixes/image-20220115111705867.png)
+
+![image-20220115111640194](images/CVEfixes/image-20220115111640194.png)
+
+### pandas补充:
+
+#### explode: 将类似列表的每个元素转换为一行，从而复制索引值。
+
+```python
+>>> df = pd.DataFrame({'A': [[1, 2, 3], 'foo', [], [3, 4]], 'B': 1})
+>>> df
+           A  B
+0  [1, 2, 3]  1
+1        foo  1
+2         []  1
+3     [3, 4]  1
+>>> df.explode('A')
+     A  B
+0    1  1
+0    2  1
+0    3  1
+1  foo  1
+2  NaN  1
+3    3  1
+3    4  1
+```
+
+#### pandas reset_index
+
+数据清洗时，会将带空值的行删除，此时DataFrame或Series类型的数据不再是连续的索引，可以使用**reset_index()重置索引**。
+
+```python
+import pandas as pd
+import numpy as np
+df = pd.DataFrame(np.arange(20).reshape(5,4),index=[1,3,4,6,8])
+print(df)
+    0   1   2   3
+1   0   1   2   3
+3   4   5   6   7
+4   8   9  10  11
+6  12  13  14  15
+8  16  17  18  19
+```
+
+ reset_index()重置索引：
+
+```python
+print(df.reset_index())
+   index   0   1   2   3
+0      1   0   1   2   3
+1      3   4   5   6   7
+2      4   8   9  10  11
+3      6  12  13  14  15
+4      8  16  17  18  19
+```
+
+在获得新的index，原来的index变成数据列，保留下来。
+
+不想保留原来的index，使用参数 `drop=True`，默认 False。
+
+```python
+print(df.reset_index(drop=True))
+    0   1   2   3
+0   0   1   2   3
+1   4   5   6   7
+2   8   9  10  11
+3  12  13  14  15
+4  16  17  18  19
+```
 
 ## collect_commits
 
