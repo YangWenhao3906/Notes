@@ -4,6 +4,8 @@ CVEfixes报告
 
 [原项目地址](https://github.com/secureIT-project/CVEfixes)
 
+[我的fork](https://github.com/YangWenhao3906/CVEfixes):目前包含注释,并将cwe更新为最新
+
 # 环境配置
 
 2022.1.10
@@ -877,7 +879,48 @@ print(df.reset_index(drop=True))
 4  16  17  18  19
 ```
 
-## collect_commits
-
 ## collect_projects
 
+### fixes表创建
+
+将ref在GitHub等代码托管网站中的放入df_fixes,并通过http访问测试过滤不存在的url
+
+#### get_ref_links
+
+调用extract_project_links创建df_fixes, 通过http访问测试过滤不存在的url
+
+#### extract_project_links
+
+将ref在GitHub等代码托管网站中的放入df_fixes
+
+![](images/CVEfixes/image-20220115143632403.png)
+
+![image-20220115153017007](images/CVEfixes/image-20220115153017007.png)
+
+![image-20220115145101627](images/CVEfixes/image-20220115145101627.png)
+
+### commits表
+
+#### store_tables
+
+结构
+
+![image-20220115150847074](images/CVEfixes/image-20220115150847074.png)
+
+##### 疑问
+
+![image-20220115164804052](images/CVEfixes/image-20220115164804052.png)
+
+[随便找了一个ref的网址](https://github.com/rpm-software-management/rpm/commit/d6a86b5e69e46cc283b1e06c92343319beb42e21)
+
+![image-20220115153628671](images/CVEfixes/image-20220115153628671.png)
+
+![image-20220115153737846](images/CVEfixes/image-20220115153737846.png)
+
+
+
+一个cve多个commit![image-20220115160835805](images/CVEfixes/image-20220115160835805.png)
+
+##### 疑问
+
+![image-20220115164645566](images/CVEfixes/image-20220115164645566.png)
