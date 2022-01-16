@@ -30,6 +30,8 @@ git clone git@github.com:secureIT-project/CVEfixes.git
 
 conda env create -f environment.yml
 
+![image-20220116092629160](images/CVEfixes/image-20220116092629160.png)
+
 ### 问题: conflict
 
 ```
@@ -924,3 +926,157 @@ print(df.reset_index(drop=True))
 ##### 疑问
 
 ![image-20220115164645566](images/CVEfixes/image-20220115164645566.png)
+
+# 代码运行
+
+## 直接运行未翻墙
+
+报错: requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')
+
+**猜测**: 可能是没有搭梯子
+
+```shell
+Traceback (most recent call last):
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 277, in <module>
+    store_tables(get_ref_links())
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 97, in get_ref_links
+    unfetched_urls = filter_urls(unique_urls)
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 37, in filter_urls
+    code = requests.head(url).status_code
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/api.py", line 102, in head
+    return request('head', url, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/sessions.py", line 529, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/sessions.py", line 645, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/adapters.py", line 501, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+```
+
+## 经过代理
+
+经过代理,报错信息更改:
+
+requests.exceptions.SSLError: HTTPSConnectionPool
+
+[查看网上对于此报错的教程](https://cloud.tencent.com/developer/article/1572216)
+
+将请求中的verify字段从默认的True改为False,不验证证书
+
+```shell
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 277, in <module>
+    store_tables(get_ref_links())
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 97, in get_ref_links
+    unfetched_urls = filter_urls(unique_urls)
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 37, in filter_urls
+    code = requests.head(url).status_code
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/api.py", line 102, in head
+    return request('head', url, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/sessions.py", line 529, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/sessions.py", line 645, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/adapters.py", line 517, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='github.com', port=443): Max retries exceeded with url: /digint/btrbk (Caused by SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1129)')))
+
+```
+
+![不验证证书](images/CVEfixes/image-20220116102248390.png)
+
+![image-20220116102328217](images/CVEfixes/image-20220116102328217.png)
+
+## 不验证证书
+
+![image-20220116102523012](images/CVEfixes/image-20220116102523012.png)
+
+报出一堆InsecureRequestWarning
+
+很奇怪, 又报了相同的SSLError
+
+```shell
+Traceback (most recent call last):
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 277, in <module>
+    store_tables(get_ref_links())
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 97, in get_ref_links
+    unfetched_urls = filter_urls(unique_urls)
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 37, in filter_urls
+    code = requests.head(url,verify=False).status_code
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/api.py", line 102, in head
+    return request('head', url, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/sessions.py", line 529, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/sessions.py", line 645, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/adapters.py", line 517, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='github.com', port=443): Max retries exceeded with url: /kylebrowning/APNSwift (Caused by SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1129)')))
+```
+
+看了网上的blog有点蒙
+
+接着又什么都不改,又运行了一次,这次是ProxyError,
+
+猜测: 可能是关机
+
+```shell
+http.client.RemoteDisconnected: Remote end closed connection without response
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/adapters.py", line 440, in send
+    resp = conn.urlopen(
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/urllib3/connectionpool.py", line 785, in urlopen
+    retries = retries.increment(
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/urllib3/util/retry.py", line 592, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='github.com', port=443): Max retries exceeded with url: /opencast/opencast (Caused by ProxyError('Cannot connect to proxy.', RemoteDisconnected('Remote end closed connection without response')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 277, in <module>
+    store_tables(get_ref_links())
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 97, in get_ref_links
+    unfetched_urls = filter_urls(unique_urls)
+  File "/home/yang/Documents/CVE/CVEfixes/Code/collect_projects.py", line 37, in filter_urls
+    code = requests.head(url,verify=False).status_code
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/api.py", line 102, in head
+    return request('head', url, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/api.py", line 61, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/sessions.py", line 529, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/sessions.py", line 645, in send
+    r = adapter.send(request, **kwargs)
+  File "/home/yang/anaconda3/envs/CVEfixes/lib/python3.9/site-packages/requests/adapters.py", line 513, in send
+    raise ProxyError(e, request=request)
+requests.exceptions.ProxyError: HTTPSConnectionPool(host='github.com', port=443): Max retries exceeded with url: /opencast/opencast (Caused by ProxyError('Cannot connect to proxy.', RemoteDisconnected('Remote end closed connection without response')))
+
+```
+
+又运行了一次
+
+![image-20220116122730017](images/CVEfixes/image-20220116122730017.png)
+
+自欺欺人一波
+
+![image-20220116123822308](images/CVEfixes/image-20220116123822308.png)
+
+
+
+
+
+
+
