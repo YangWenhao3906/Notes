@@ -1076,7 +1076,65 @@ requests.exceptions.ProxyError: HTTPSConnectionPool(host='github.com', port=443)
 
 
 
+[相关教程](https://stackoverflow.com/questions/33410577/python-requests-exceptions-sslerror-eof-occurred-in-violation-of-protocol)
+
+安装ndg-httpsclient, 但是已经包含在PyOpenSSL里面了
+
+![image-20220116130109782](images/CVEfixes/image-20220116130109782.png)
 
 
 
+**一个想法: 既然是只用了commits中的,为什么不先用正则表达式把commit网址提取出来, 再进行urls_filter??**
+
+代理配置
+
+xfce中没有找到GUI的代理配置, **如下图这样的页面不存在**
+
+<img src="images/CVEfixes/image-20220116161454609.png" alt="image-20220116161454609" style="zoom:60%;" />
+
+/etc/environment增加如下内容
+
+```shell
+http_proxy=127.0.0.1:7890
+https_proxy=127.0.0.1:7890
+# ftp_proxy=http://myproxy.server.com:8080/
+all_proxy=socks5://127.0.0.1:7891
+no_proxy="localhost,127.0.0.1,localaddress,.localdomain.com"
+HTTP_PROXY=127.0.0.1:7890
+HTTPS_PROXY=127.0.0.1:7890
+# FTP_PROXY=http://myproxy.server.com:8080/
+ALL_PROXY=socks5://127.0.0.1:7891
+NO_PROXY="localhost,127.0.0.1,localaddress,.localdomain.com"
+```
+
+然后执行
+
+```shell
+source /etc/environment
+```
+
+# 使用作者提供的数据库
+
+![image-20220117163409844](images/CVEfixes/image-20220117163409844.png)
+
+## file_change 文件更改
+
+| columns 柱                        | description 描述                                             |
+| --------------------------------- | ------------------------------------------------------------ |
+| file_change_id 文件 _ change _ id | Primary key for the table 表的主键                           |
+| hash                              | The unique identifier for git commit唯一标识符提交           |
+| filename 文件名                   | Name of of the file 文件名                                   |
+| old_path 老路                     | Old path of the file or 'None' if the file is new文件的旧路径，如果文件是新的，则为“ None” |
+| new_path 新路径                   | New path of the file or 'None' if the file is deleted文件的新路径，如果文件被删除，则为“ None” |
+| change_type 改变类型              | Type of change, i.e., MODIFY/ADD/DELETE/RENAME更改的类型，例如，MODIFY/ADD/DELETE/RENAME |
+| diff 差异                         | Git diff between files in two commits两次提交中的文件之间的 Git diff |
+| diff_parsed 解析                  | The dictionary contains added and deleted lines, for e.g., {'added': [(973, 'iakerb_gss_import_sec_context,')], 'deleted': [(973, ' NULL,')]}字典包含添加和删除的行，例如{‘ added’: [(973，‘ iakerb _ gss _ import _ sec _ context,’)] ，‘ deleted’: [(973,’NULL,’)]} |
+| code_after 后面的代码             | Source code after the commit or 'None' if the file is deleted/renamed源代码在提交之后，如果文件被删除/重命名，则为“ None” |
+| code_before 代码之前              | Source code before the commit refers vulnerable code or 'None' if the file is added/renamed提交之前的源代码指的是易受攻击的代码，如果文件被添加/重命名，则指的是“ None” |
+| nloc                              | Number of lines in the file文件中的行数                      |
+| complexity 复杂性                 | Cyclomatic complexity metric of the file, i.e. a qualitative measure of linearly independent paths in code文件的循环复杂度度量，即代码中线性独立路径的定性度量 |
+| token_count 令牌计数              | Number of tokens in code 代码中的标记数                      |
+| programming_language 程序设计语言 | Programming language of source code 源代码编程语言           |
+| num_lines_added 添加              | Number of lines added to the file添加到文件的行数            |
+| num_lines_deleted 行删除          | Number of lines removed from the file 从文件中删除的行数     |
 
