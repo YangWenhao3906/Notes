@@ -1,3 +1,5 @@
+构建漏洞数据库
+
 CVEfixes报告
 
 [原论文地址](https://arxiv.org/abs/2107.08760)
@@ -6,7 +8,7 @@ CVEfixes报告
 
 [我的fork](https://github.com/YangWenhao3906/CVEfixes):目前包含注释,并将cwe更新为最新
 
-# 环境配置
+# CVEfixes环境配置
 
 2022.1.10
 
@@ -767,7 +769,7 @@ https://blog.csdn.net/oPengXiaoLiang/article/details/100678908  相关教程
 
 
 
-# 阅读代码
+# CVEfixes阅读代码
 
 ## 阅读方式
 
@@ -1137,4 +1139,88 @@ source /etc/environment
 | programming_language 程序设计语言 | Programming language of source code 源代码编程语言           |
 | num_lines_added 添加              | Number of lines added to the file添加到文件的行数            |
 | num_lines_deleted 行删除          | Number of lines removed from the file 从文件中删除的行数     |
+
+SELECT fx.repo_url, f.hash, cv.cve_id, f.filename, m.name, m.before_change
+FROM fixes fx, cve cv, file_change f, method_change m
+WHERE f.hash = fx.hash
+AND fx.cve_id = cv.cve_id
+AND f.file_change_id = m.file_change_id
+AND fx.repo_url = 'https://github.com/openssl/openssl'
+
+# 使用BinKit编译OpenSSL漏洞版本
+
+通过binkit这个工程，将openssl的漏洞版本自动编译一下，我看binkit根目录有do_compile_openssl.sh，binkit可以用不同平台的编译器进行交叉编译
+
+## 工具ToolChain
+
+[GNU Toolchain介绍](https://blog.csdn.net/wind19/article/details/6122121)
+
+```
+GNU工具链（GNU toolchain）是一个包含了由GNU项目所产生的各种编程工具的集合。这些工具形成了一条工具链（串行使用的一组工具），用于开发应用程序和操作系统。 GNU工具链中包含的项目有：
+
+GNU make：用于编译和构建的自动工具；
+GNU编译器集合（GCC）：一组多种编程语言的编译器；
+GNU Binutils：包含链接器、汇编器和其它工具的工具集；
+GNU Debugger（GDB）：代码调试工具；
+GNU构建系统（autotools）:
+Autoconf
+Autoheader
+Automake
+Libtool
+```
+
+## 工具BinKit
+
+### 预编译的Tool chain
+
+![image-20220118112719499](images/CVEfixes/image-20220118112719499.png)
+
+### 环境配置
+
+![image-20220118112847409](images/CVEfixes/image-20220118112847409.png)
+
+```shell
+source scripts/env.sh
+scripts/link_toolchains.sh
+```
+
+#### link
+
+两遍的link输出不一样
+
+![image-20220118112410127](images/CVEfixes/image-20220118112410127.png)
+
+完成链接
+
+**需要学习一下shell!!**
+
+### 安装gnu默认包
+
+```shell
+scripts/install_gnu_deps.sh # install default packages for dataset compilation
+```
+
+![image-20220118113123513](images/CVEfixes/image-20220118113123513.png)
+
+### 更改原项目,试着编译OpenSSL
+
+原项目是编译gnu, 但是在编译gnu之前编译了OpenSSL
+
+![image-20220118113256519](images/CVEfixes/image-20220118113256519.png)
+
+稍作修改(BASEDIR配置), 直接让其编译OpenSSL
+
+![image-20220118113158227](images/CVEfixes/image-20220118113158227.png)
+
+漫长的等待......
+
+
+
+# 目的: 自动化CVEfixes-BinKit
+
+CVEfixes -> commits hash
+
+BinKit -> git checkout "hash" -> compile
+
+## 阅读代码do_compile_openssl.sh
 
