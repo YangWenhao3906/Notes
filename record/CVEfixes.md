@@ -1224,3 +1224,62 @@ BinKit -> git checkout "hash" -> compile
 
 ## 阅读代码do_compile_openssl.sh
 
+完成注释
+
+## 编译OpenSSL的漏洞版本
+
+### 更改参数
+
+漏洞hash
+
+![image-20220119172431522](images/CVEfixes/image-20220119172431522.png)
+
+所需的架构和编译版本
+
+![image-20220119172446576](images/CVEfixes/image-20220119172446576.png)
+
+### 问题
+
+```shell
+(略)
+cd30f03ac5bf2962f44bd02ae8d88245dff2f12c_clang-7.0_x86_64_O1 already done.
+cd30f03ac5bf2962f44bd02ae8d88245dff2f12c_clang-7.0_x86_64_O2 already done.
+cd30f03ac5bf2962f44bd02ae8d88245dff2f12c_clang-7.0_x86_64_O3 already done.
+COMPILE 0ed26acce328ec16a3aa635f1ca37365e8c7403a clang-7.0 x86_64 O3 FAILED
+COMPILE 0ed26acce328ec16a3aa635f1ca37365e8c7403a gcc-8.2.0 x86_64 O1 FAILED
+COMPILE 0ed26acce328ec16a3aa635f1ca37365e8c7403a gcc-8.2.0 x86_64 O3 FAILED
+COMPILE 0ed26acce328ec16a3aa635f1ca37365e8c7403a clang-7.0 x86_64 O1 FAILED
+COMPILE 0ed26acce328ec16a3aa635f1ca37365e8c7403a gcc-8.2.0 x86_64 O2 FAILED
+COMPILE 0ed26acce328ec16a3aa635f1ca37365e8c7403a clang-7.0 x86_64 O2 FAILED
+COMPILE 0ed26acce328ec16a3aa635f1ca37365e8c7403a clang-7.0 x86_64 O0 FAILED
+COMPILE 0ed26acce328ec16a3aa635f1ca37365e8c7403a gcc-8.2.0 x86_64 O0 FAILED
+COMPILE ce325c60c74b0fa784f5872404b722e120e5cab0 clang-7.0 x86_64 O0 FAILED
+COMPILE ce325c60c74b0fa784f5872404b722e120e5cab0 gcc-8.2.0 x86_64 O0 FAILED
+COMPILE ce325c60c74b0fa784f5872404b722e120e5cab0 clang-7.0 x86_64 O1 FAILED
+COMPILE ce325c60c74b0fa784f5872404b722e120e5cab0 clang-7.0 x86_64 O2 FAILED
+COMPILE ce325c60c74b0fa784f5872404b722e120e5cab0 clang-7.0 x86_64 O3 FAILED
+COMPILE ce325c60c74b0fa784f5872404b722e120e5cab0 gcc-8.2.0 x86_64 O1 FAILED
+COMPILE ce325c60c74b0fa784f5872404b722e120e5cab0 gcc-8.2.0 x86_64 O2 FAILED
+COMPILE ce325c60c74b0fa784f5872404b722e120e5cab0 gcc-8.2.0 x86_64 O3 FAILED
+```
+
+正确编译:包含libssl和libcrypto
+
+![image-20220119172708751](images/CVEfixes/image-20220119172708751.png)
+
+#### 特殊情况
+
+- 只含libcrypto
+
+  ![image-20220119172812392](images/CVEfixes/image-20220119172812392.png)
+
+  对应提交时的[repo](https://github.com/openssl/openssl/tree/ce325c60c74b0fa784f5872404b722e120e5cab0)
+
+- 全部失败
+
+  ![image-20220119172841367](images/CVEfixes/image-20220119172841367.png)
+
+  查看log![image-20220119173213471](images/CVEfixes/image-20220119173213471.png)
+
+  对应提交时的[repo](https://github.com/openssl/openssl/tree/0ed26acce328ec16a3aa635f1ca37365e8c7403a)
+
