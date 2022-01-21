@@ -1275,11 +1275,17 @@ COMPILE ce325c60c74b0fa784f5872404b722e120e5cab0 gcc-8.2.0 x86_64 O3 FAILED
 
   对应提交时的[repo](https://github.com/openssl/openssl/tree/ce325c60c74b0fa784f5872404b722e120e5cab0)
 
+  提交时的[commit](https://github.com/openssl/openssl/commit/ce325c60c74b0fa784f5872404b722e120e5cab0)
+
 - 全部失败
 
   ![image-20220119172841367](images/CVEfixes/image-20220119172841367.png)
 
-  查看log![image-20220119173213471](images/CVEfixes/image-20220119173213471.png)
+  查看log
+
+  ![image-20220119173213471](images/CVEfixes/image-20220119173213471.png)
 
   对应提交时的[repo](https://github.com/openssl/openssl/tree/0ed26acce328ec16a3aa635f1ca37365e8c7403a)
+
+  提交时的[commit](https://github.com/openssl/openssl/commit/0ed26acce328ec16a3aa635f1ca37365e8c7403a)
 
