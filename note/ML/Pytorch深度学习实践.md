@@ -281,7 +281,7 @@ for w in np.arange(0.0,4.1,0.1):
 
 ## PyTorch的Tensor与动态图
 
-### PyTorch中的Tensor:
+### PyTorch中的Tensor
 
 组成: 包含`data`和`grad`
 
@@ -365,6 +365,11 @@ print("After Training: ",5,forward(5))
 
 ## Prepare dataset
 
+```Python
+x_data = torch.tensor([[1.0], [2.0], [3.0]])
+y_data = torch.tensor([[1.98], [4.12], [5.95]])
+```
+
 numpy广播机制
 
 - 预测时的广播: 
@@ -380,6 +385,17 @@ numpy广播机制
 <img src="images/Pytorch%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5/image-20220127103901717.png" alt="image-20220127103901717" style="zoom: 33%;" />
 
 ## Design Model
+
+```Python
+class LinearModel(torch.nn.Module):
+    def __init__(self):
+        super(LinearModel,self).__init__()
+        self.linear = torch.nn.Linear(1,1)
+
+    def forward(self,x):
+        y_pred = self.linear(x)
+        return y_pred
+```
 
 继承`nn.Module`
 
@@ -431,10 +447,10 @@ model = LinearModel()
 
 ## Construct Loss and Optimizer
 
-```python
-critirion = 
-optimizer = torch.optim.SGD(model.parameters(),
-
+```Python
+model = LinearModel()
+criterion = torch.nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(),lr=0.01)
 ```
 
 ```Python
@@ -473,5 +489,103 @@ print('b = ',model.linear.bias.item())
 x_test = torch.Tensor([[4.0],[5.0]])
 y_test = model(x_test)
 print("y_test = ",y_test.data)
+```
+
+# Lec6 逻辑斯蒂回归
+
+解决的问题的类型: 分类, 用回归解决分类
+
+## 回归任务数据集分析
+
+MNIST数据集分析:
+
+- 0-9每两个类之间并没有实数上的大小/相邻关系
+
+思路: 
+
+- 找概率最大值
+
+<img src="images/Pytorch%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5/image-20220127150925755.png" alt="image-20220127150925755" style="zoom: 50%;" />
+
+torch中自带的MNIST可以直接调用
+
+<img src="images/Pytorch%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5/image-20220127151049989.png" alt="image-20220127151049989" style="zoom: 67%;" />
+
+torch中自带的CIFAR-10直接调用
+
+<img src="images/Pytorch%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5/image-20220127151141385.png" alt="image-20220127151141385" style="zoom:33%;" />
+
+## 回归到分类
+
+以二分类为例
+
+- 概率在0.4-0.6之间时, 说明很难确定
+
+从实数空间R->[0.1]概率
+
+- 将y_hat代入logistic函数
+
+<img src="images/Pytorch%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5/image-20220127152100702.png" alt="image-20220127152100702" style="zoom:33%;" />
+
+- 常见sigmoid函数
+
+<img src="images/Pytorch%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5/image-20220127152149159.png" alt="image-20220127152149159" style="zoom:33%;" />
+
+逻辑斯蒂回归模型
+
+<img src="images/Pytorch%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5/image-20220127152452676.png" alt="image-20220127152452676" style="zoom:33%;" />
+
+## 将分布之间的差异作为Loss
+
+方式1: KL散度
+
+方式2: 交叉熵
+
+<img src="images/Pytorch%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5/image-20220127152945552.png" alt="image-20220127152945552" style="zoom: 25%;" />
+
+加上负号, 使得交叉熵越小越好
+
+二分类中的交叉熵称为`BCE`
+
+<img src="images/Pytorch%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E8%B7%B5/image-20220127153017607.png" alt="image-20220127153017607" style="zoom: 33%;" />
+
+```Python
+import torch
+import torch.nn.functional as F
+
+x_data = torch.Tensor([[1.0], [2.0], [3.0]])
+y_data = torch.Tensor([[0], [0], [1]])
+#%%
+class LogisticRegressionModel(torch.nn.Module):
+    def __init__(self):
+        super(LogisticRegressionModel,self).__init__()
+        self.linear = torch.nn.Linear(1,1)
+
+    def forward(self,x):
+        # 在forward多了一个sigmoid
+        y_pred = F.sigmoid(self.linear(x))
+        return y_pred
+
+model = LogisticRegressionModel()
+#%%
+criterion = torch.nn.BCELoss(size_average=False)
+optimizer = torch.optim.SGD(model.parameters(),lr=0.01)
+#%%
+for epoch in range(100000):
+    # forward
+    y_pred = model(x_data)
+    loss = criterion(y_pred,y_data)
+    print(epoch,loss.item())
+
+    # backward
+    optimizer.zero_grad()
+    loss.backward()
+
+    # update
+    optimizer.step()
+#%%
+x_test = torch.Tensor([[3],[4]])
+y_test = model(x_test)
+print(y_test.data)
 ```
 
