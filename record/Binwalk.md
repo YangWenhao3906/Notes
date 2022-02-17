@@ -149,6 +149,8 @@ General Options:
 
 # 运行
 
+## 用例1
+
 用例`firmwalker`中给的固件[example](https://onedrive.live.com/?authkey=%21AHJ5i3XofvZUIu8&id=DDE735C9853110E7%217782&cid=DDE735C9853110E7)
 
 Windows解压时发现如下情况
@@ -159,7 +161,41 @@ Kali中解压也是报错
 
 <img src="images/Binwalk/image-20220217203040742.png" alt="image-20220217203040742" style="zoom: 67%;" />
 
+## 用例2
+
+[常见路由器固件下载](https://www.kejiwanjia.com/jiaocheng/hardware/luyou/893.html)
+
 分析[小米4路由器固件](https://drive.google.com/drive/folders/1L0fS0CFJwybh9xwIwM4j4a19kZnU446j)
 
-![image-20220217205757248](images/Binwalk/image-20220217205757248.png)
+### 运行`-B`
+
+![image-20220217210446719](images/Binwalk/image-20220217210446719.png)
+
+```shell
+┌──(yang㉿kali)-[/mnt/hgfs/test_firmware]
+└─$ binwalk -B openwrt-ramips-mt7621-xiaomi_mir4-squashfs-kernel1.bin 
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             uImage header, header size: 64 bytes, header CRC: 0x617F6472, created: 2021-01-23 11:30:31, image size: 2044508 bytes, Data Address: 0x80001000, Entry Point: 0x80001000, data CRC: 0x8CC07B8, OS: Linux, CPU: MIPS, image type: OS Kernel Image, compression type: lzma, image name: "MIPS OpenWrt Linux-4.14.202"
+64            0x40            LZMA compressed data, properties: 0x6D, dictionary size: 2097152 bytes, uncompressed size: 6553148 bytes
+```
+
+### 运行`-Z`
+
+一直卡着
+
+![image-20220217210851125](images/Binwalk/image-20220217210851125.png)
+
+又运行一次, dictionary size 不同![image-20220217211328332](images/Binwalk/image-20220217211328332.png)
+
+### 运行`-E`
+
+好像是matplot里吧出了问题
+
+![image-20220217210934775](images/Binwalk/image-20220217210934775.png)
+
+安装matplotlib之后
+
+![image-20220217211713115](images/Binwalk/image-20220217211713115.png)
 
