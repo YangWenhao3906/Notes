@@ -4,7 +4,9 @@
 
 <img src="images/Binwalk/image-20220217194717932.png" alt="image-20220217194717932" style="zoom:80%;" />
 
-# 使用
+# 使用教程
+
+[官方用法教程](https://github.com/ReFirmLabs/binwalk/wiki/Usage)
 
 ## 命令行参数
 
@@ -85,7 +87,6 @@ General Options:
 ```shell
 用法: binwalk [选项] [文件1] [文件2] [文件3] ...
 
-
 文件签名扫描选项:
 
     -B, --signature              使用常见的文件签名扫描目标文件
@@ -149,7 +150,7 @@ General Options:
 
 # 运行
 
-## 用例1
+## 用例1-失败
 
 用例`firmwalker`中给的固件[example](https://onedrive.live.com/?authkey=%21AHJ5i3XofvZUIu8&id=DDE735C9853110E7%217782&cid=DDE735C9853110E7)
 
@@ -161,13 +162,15 @@ Kali中解压也是报错
 
 <img src="images/Binwalk/image-20220217203040742.png" alt="image-20220217203040742" style="zoom: 67%;" />
 
-## 用例2
+## 用例2-路由器固件
 
 [常见路由器固件下载](https://www.kejiwanjia.com/jiaocheng/hardware/luyou/893.html)
 
 分析[小米4路由器固件](https://drive.google.com/drive/folders/1L0fS0CFJwybh9xwIwM4j4a19kZnU446j)
 
-### 运行`-B`
+### 对`.bin`操作
+
+#### 运行`-B`
 
 ![image-20220217210446719](images/Binwalk/image-20220217210446719.png)
 
@@ -181,7 +184,7 @@ DECIMAL       HEXADECIMAL     DESCRIPTION
 64            0x40            LZMA compressed data, properties: 0x6D, dictionary size: 2097152 bytes, uncompressed size: 6553148 bytes
 ```
 
-### 运行`-Z`
+#### 运行`-Z`: 扫描原始LZMA压缩流
 
 一直卡着
 
@@ -189,13 +192,51 @@ DECIMAL       HEXADECIMAL     DESCRIPTION
 
 又运行一次, dictionary size 不同![image-20220217211328332](images/Binwalk/image-20220217211328332.png)
 
-### 运行`-E`
+#### 运行`-E`:Entropy-失败
 
-好像是matplot里吧出了问题
+好像是matplotlib出了问题
 
 ![image-20220217210934775](images/Binwalk/image-20220217210934775.png)
 
-安装matplotlib之后
+安装matplotlib, anaconda之后
 
 ![image-20220217211713115](images/Binwalk/image-20220217211713115.png)
+
+应该是binwalk安装时候出了问题,没有安装dependency
+
+安装dependence之后仍旧如上的报错信息
+
+#### 使用lzma解压-失败
+
+![image-20220218174139635](images/Binwalk/image-20220218174139635.png)
+
+#### 使用`-e`提取
+
+![image-20220218190938882](images/Binwalk/image-20220218190938882.png)
+
+得到文件夹
+
+![image-20220218191314752](images/Binwalk/image-20220218191314752.png)
+
+文件夹中内容
+
+![image-20220218191209645](images/Binwalk/image-20220218191209645.png)
+
+用`7z`解压缩`40.7z`, 解压后就是文件`40`
+
+![image-20220218191449088](images/Binwalk/image-20220218191449088.png)
+
+### 对提取后的文件`40`操作
+
+#### 运行`-B`
+
+![image-20220218191553842](images/Binwalk/image-20220218191553842.png)
+
+#### 运行`-e`再次提取
+
+![image-20220218191914234](images/Binwalk/image-20220218191914234.png)
+
+![image-20220218191950122](images/Binwalk/image-20220218191950122.png)
+
+对`585A88.xz`解压缩发生错误
 
