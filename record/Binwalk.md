@@ -240,3 +240,5 @@ DECIMAL       HEXADECIMAL     DESCRIPTION
 
 对`585A88.xz`解压缩发生错误
 
+![image-20220218193643327](images/Binwalk/image-20220218193643327.png)
+
