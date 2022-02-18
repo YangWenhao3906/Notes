@@ -162,7 +162,7 @@ Kali中解压也是报错
 
 <img src="images/Binwalk/image-20220217203040742.png" alt="image-20220217203040742" style="zoom: 67%;" />
 
-## 用例2-路由器固件
+## 用例2-小米路由器固件1
 
 [常见路由器固件下载](https://www.kejiwanjia.com/jiaocheng/hardware/luyou/893.html)
 
@@ -241,4 +241,14 @@ DECIMAL       HEXADECIMAL     DESCRIPTION
 对`585A88.xz`解压缩发生错误
 
 ![image-20220218193643327](images/Binwalk/image-20220218193643327.png)
+
+## 用例3-小米路由器固件2
+
+经过如上操作之后
+
+![image-20220218194902095](images/Binwalk/image-20220218194902095.png)
+
+点开之后有相当多的文件
+
+![image-20220218195121096](images/Binwalk/image-20220218195121096.png)
 
