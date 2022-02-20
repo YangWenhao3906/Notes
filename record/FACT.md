@@ -145,3 +145,100 @@ subprocess.CalledProcessError: Command '['sudo', '-EH', 'pip3', 'install', '-U',
 
 <img src="images/FACT/image-20220123200346436.png" alt="image-20220123200346436" style="zoom:67%;" />
 
+# FACT插件
+
+## 如何写一个插件
+
+对[插件模板](https://github.com/fkie-cad/FACT_analysis_plugin_template)以及插件[cve_lookup](https://github.com/fkie-cad/FACT_analysis-plugin_CVE-lookup)进行分析:
+
+### 基本信息的填写:	
+
+<img src="images/FACT/image-20220220202755321.png" alt="image-20220220202755321" style="zoom:67%;" />
+
+### 关键: 函数`process_object(self, file_object)`的实现
+
+```
+This function must be implemented by the plug-in.
+Analysis result must be a dict stored in "file_object.processed_analysis[self.NAME]"
+CAUTION: Dict keys must be strings!
+If you want to propagate results to parent objects store a list of strings in
+        "file_object.processed_analysis[self.NAME]['summary']".
+
+        File's binary is available via "file_object.binary".
+        File's local storage path is available via "file_object.file_path".
+        Results of other plug-ins can be accessed via "file_object.processed_analysis['PLUGIN_NAME']".
+        Do not forget to add these plug-ins to "DEPENDENCIES".
+
+该函数必须由插件实现。
+分析结果必须是一个字典存储在"file_object. procesed_analysis [self.NAME]"
+注意:字典键必须是字符串!
+如果要将结果传播到父对象，则在中存储字符串列表
+“file_object.processed_analysis self.NAME(“摘要”)”。
+File的二进制文件可以通过"file_object.binary"获得。
+文件的本地存储路径可以通过"file_object.file_path"获得。
+其他插件的结果可以通过"file_object. procesd_analysis ['PLUGIN_NAME']"来访问
+```
+
+## cve lookup插件功能的实现
+
+### 数据库构建
+
+查看代码`data_prep.py`
+
+功能: 下载CPE和CVE, 进行一些处理之后, 构建table
+
+```Python
+CPE_URL = 'https://nvd.nist.gov/feeds/xml/cpe/dictionary/official-cpe-dictionary_v2.3.xml.zip'
+CVE_URL = 'https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-{}.json.zip'
+```
+
+### 查询
+
+1. 遍历所有component, 并将component split为`product`和`version`, 对每个component调用`func lookup_vulnerabilities_in_database()`,即在数据库中查找漏洞
+
+2. 对product, 构建查询term, 首先在`CPE`中寻找, sort之后返回`matched_product`
+
+   - 什么是CPE?
+
+     [wiki CPE](https://en.wikipedia.org/wiki/Common_Platform_Enumeration)
+
+   ```
+   Common Platform Enumeration (CPE) is a structured naming scheme for information technology systems, software, and packages. Based upon the generic syntax for Uniform Resource Identifiers (URI), CPE includes a formal name format, a method for checking names against a system, and a description format for binding text and tests to a name.
+   
+   CPE是信息技术系统、软件和包的结构化命名方案。基于统一资源标识符(URI)的通用语法，CPE 包括正式名称格式、针对系统检查名称的方法以及将文本和测试绑定到名称的描述格式
+   ```
+
+   - CPE格式
+
+   ```xml
+   cpe:<cpe_version>:<part>:<vendor>:<product>:<version>:<update>:<edition>:<language>:<sw_edition>:<target_sw>:<target_hw>:<other>
+   ```
+
+   - 查询函数
+
+   ```Python
+   def match_cpe(db: DB, product_search_terms: list) -> Generator[namedtuple, None, None]:
+       for vendor, product, version in db.select_query(QUERIES['cpe_lookup']):
+           for product_term in product_search_terms:
+               if terms_match(product_term, product):
+                   yield PRODUCT(vendor, product, version)
+   ```
+
+   - 查询语句:
+
+   ```Python
+   {
+       "cpe_lookup": "SELECT DISTINCT vendor, product, version FROM cpe_table",
+    	"cve_lookup": "SELECT cve_id, vendor, product, version FROM cve_table",
+   }
+   ```
+
+3. 在`CPE`中找到后, 接着在`CVE`中寻找, 若match, **则返回`CVE ID`的list, 存储在`cve_candidates`**
+
+   ```Python
+   def search_cve(db: DB, product: namedtuple) -> Generator[str, None, None]:
+       for cve_id, vendor, product_name, version in db.select_query(QUERIES['cve_lookup']):
+           if terms_match(product.vendor_name, vendor) and terms_match(product.product_name, product_name) \
+                   and (product.version_number.startswith(get_version_index(version, 0)) or version == 'ANY' or version == 'NA'):
+               yield cve_id
+   ```
